@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cognitive Leaf Reflex Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-default">
+
+  <!-- Mute audio control toggle -->
+  <div id="mute-control">
+    <button id="mute-btn" title="Toggle Sound">🔊</button>
+  </div>
+
+  <div id="app-container">
+    
+    <!-- HUD Header -->
+    <div id="hud">
+      <div class="hud-item">
+        <span class="hud-label">Score</span>
+        <span class="hud-value" id="score-val">0</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Level</span>
+        <span class="hud-value" id="level-val">1</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Accuracy</span>
+        <span class="hud-value" id="accuracy-val">100%</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label" id="hud-combo" style="display: none;">COMBO: <span id="combo-val">0</span></span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Lives</span>
+        <div id="hud-lives-container">
+          <span class="heart">♥</span>
+          <span class="heart">♥</span>
+          <span class="heart">♥</span>
+        </div>
+      </div>
+      <div class="hud-item">
+        <button id="hud-pause-btn" title="Pause Game">⏸</button>
+      </div>
+    </div>
+
+    <!-- Active Canvas Area -->
+    <div id="canvas-container">
+      <canvas id="game-canvas"></canvas>
+      
+      <!-- Flash Feedback Overlay -->
+      <div id="flash-overlay"></div>
+    </div>
+
+    <!-- 1. Start Screen -->
+    <div id="start-screen" class="screen">
+      <h1>Leaf Reflex</h1>
+      <p class="subtitle">A neuroscience training exercise for response inhibition</p>
+      
+      <div class="difficulty-selector">
+        <button class="diff-btn" data-difficulty="easy">Easy</button>
+        <button class="diff-btn active" data-difficulty="medium">Medium</button>
+        <button class="diff-btn" data-difficulty="hard">Hard</button>
+      </div>
+      
+      <button id="start-btn" class="primary">Start Game</button>
+      <button id="instructions-btn">Instructions</button>
+    </div>
+
+    <!-- 2. Pause Screen -->
+    <div id="pause-screen" class="screen hidden">
+      <h2>Game Paused</h2>
+      <button id="resume-btn" class="primary">Resume</button>
+      <button id="pause-restart-btn">Restart</button>
+      <button id="pause-menu-btn">Main Menu</button>
+    </div>
+
+    <!-- 3. Game Over Screen -->
+    <div id="gameover-screen" class="screen hidden">
+      <h2>Game Over</h2>
+      
+      <div class="stats-list">
+        <div class="stats-row">
+          <span class="stats-label">Final Score:</span>
+          <span class="stats-val" id="final-score">0</span>
+        </div>
+        <div class="stats-row">
+          <span class="stats-label">High Score:</span>
+          <span class="stats-val" id="final-high-score">0</span>
+        </div>
+        <div class="stats-row">
+          <span class="stats-label">Level Reached:</span>
+          <span class="stats-val" id="final-level">1</span>
+        </div>
+        <div class="stats-row">
+          <span class="stats-label">Accuracy:</span>
+          <span class="stats-val" id="final-accuracy">100%</span>
+        </div>
+        <div class="stats-row">
+          <span class="stats-label">Max Combo:</span>
+          <span class="stats-val" id="final-max-combo">0</span>
+        </div>
+      </div>
+      
+      <div id="high-score-alert" class="high-score-alert" style="display: none;">
+        ✨ New High Score! ✨
+      </div>
+      
+      <button id="gameover-restart-btn" class="primary">Play Again</button>
+      <button id="gameover-menu-btn">Main Menu</button>
+    </div>
+
+    <!-- 4. Instructions Screen -->
+    <div id="instructions-screen" class="screen hidden">
+      <h2>How to Play</h2>
+      <p>Decide quickly which arrow key (or WASD) to press based on the leaf color:</p>
+      
+      <div class="rules-container">
+        <!-- Orange leaf rule -->
+        <div class="rule-box orange">
+          <h3>Orange Leaf</h3>
+          <canvas class="rule-diagram" id="diagram-orange"></canvas>
+          <p class="rule-desc">Match <strong>movement</strong> direction.<br>Ignore where the tip points.</p>
+        </div>
+        
+        <!-- Green leaf rule -->
+        <div class="rule-box green">
+          <h3>Green Leaf</h3>
+          <canvas class="rule-diagram" id="diagram-green"></canvas>
+          <p class="rule-desc">Match <strong>apex (tip)</strong> direction.<br>Ignore movement direction.</p>
+        </div>
+      </div>
+      
+      <p style="font-size: 0.85rem; color: var(--color-text-muted);">
+        Every 15 correct hits speeds up movement and increases spawn rate.<br>
+        Incorrect or missed inputs cost 1 life.
+      </p>
+      
+      <button id="back-btn">Back to Menu</button>
+    </div>
+
+  </div>
+
+  <!-- Load script module -->
+  <script type="module">
+    import Game from './js/game.js';
+    
+    window.addEventListener('load', () => {
+      window.game = new Game();
+      
+      // Load current high score from localStorage immediately into HUD
+      const savedHighScore = localStorage.getItem('cognitive_leaf_high_score') || 0;
+      document.getElementById('high-score-val').textContent = savedHighScore;
+    });
+  </script>
+</body>
+</html>
